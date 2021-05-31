@@ -32,31 +32,16 @@ app.use((req, res, next) => {
 
 // this function will allow us to declare the routes with middlewares esaily
 // TODO: is there a better way?
-const routeWithMiddlewares = (appInstance, httpVerb, path, handler, middlewares = [ ],  validator = [ ]) => {
-  if (middlewares.length > 0) {
-    for (let i=0; i< middlewares.length; i++) {
-      appInstance.use(path, middlewares[i]);
-    }
-  }
 
-  switch (httpVerb.toLowerCase()) {
-    case "get":
-      app.get(path, validator, handler)
-      break;
-    case "post":
-      app.post(path, validator, handler);
-      break;
-    case "delete":
-      app.delete(path, validator, handler);
-      break;
-    case "put":
-      app.put(path, validator, handler);
-      break;
-  }
-}
 // end custom functions to render routes in our own ways
+const exampleRouteMiddleware = (req, res, next) => {
+  // I am the route middleware
+  next();
+}
 
-app.get('/', function(req, res) {
+app.get('/', [
+    exampleRouteMiddleware
+], function(req, res) {
   res.send('Welcome to Node JS app.');
 });
 
