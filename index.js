@@ -5,6 +5,8 @@ let validators = require('./utilities/validators.js');
 let routes = require('./utilities/routes.js');
 
 let app = express();
+const apiRouter = express.Router();
+
 // request body parser
 app.use(bodyParser.urlencoded({
   extended: true
@@ -40,9 +42,12 @@ const exampleRouteMiddleware = (req, res, next) => {
 }
 
 app.get('/', [
-    exampleRouteMiddleware
+    exampleRouteMiddleware // if there are validation rules, merge the two array.
 ], function(req, res) {
+
   res.send('Welcome to Node JS app.');
 });
+
+app.use('/api', require('./routes/apiPublic.js'));
 
 exports.app = app;
