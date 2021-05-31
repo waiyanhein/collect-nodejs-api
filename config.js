@@ -1,5 +1,6 @@
 const config = {
-  appEnv: process.env.NODE_ENV,
+  appName: process.env.APP_NAME,
+  appEnv: process.env.NODE_ENV, // if there is jest worker id, no matter what env is set, it will always be test.
   auth: {
     jwtSecret: process.env.JWT_SECRET,
     expiresIn: process.env.AUTH_TOKEN_EXPIRES_IN // in seconds
@@ -11,6 +12,13 @@ const config = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD
     //TODO: configure more databases if you are using in the future
+  },
+  mail: {
+    address: process.env.MAIL_ADDRESS,
+    password: process.env.MAIL_PASSWORD,
+    host: process.env.MAIL_HOST,
+    port: process.env.MAIL_PORT,
+    service: process.env.MAIL_SERVICE
   }
 }
 

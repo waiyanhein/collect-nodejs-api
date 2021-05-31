@@ -19,7 +19,8 @@
 - npm install --save sequelize
 - npm install --save-dev sequelize-cli
 - Sending email
-- https://stackabuse.com/how-to-send-emails-with-node-js/
+- npm install nodemailer --save https://stackabuse.com/how-to-send-emails-with-node-js/
+- npm install nodemailer-mock --save-dev https://www.npmjs.com/package/nodemailer-mock (For mocking nodemailer)
 
 ### Database Driver - install one of the followings
 $ npm install --save pg pg-hstore # Postgres
