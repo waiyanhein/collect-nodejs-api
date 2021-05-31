@@ -2,10 +2,9 @@ require('dotenv').config();
 let express = require('express');
 let bodyParser = require('body-parser');
 let validators = require('./utilities/validators.js');
-let routes = require('./utilities/routes.js');
-
 let app = express();
 const apiRouter = express.Router();
+const User = require('./models').User;
 
 // request body parser
 app.use(bodyParser.urlencoded({
@@ -21,15 +20,7 @@ const AuthController = require('./controllers/AuthController.js');
 // end importing controllers
 
 // app-level middlewares
-app.use((req, res, next) => {
-  if (! req.auth) {
-    req.auth = {
-      is_logged_in: false
-    }
-  }
-
-  next();
-})
+app.use(require('./middlewares/appMiddleware.js'));
 // end app-level middlewares
 
 // this function will allow us to declare the routes with middlewares esaily
@@ -48,6 +39,6 @@ app.get('/', [
   res.send('Welcome to Node JS app.');
 });
 
-app.use('/api', require('./routes/apiPublic.js'));
+app.use('/api', require('./routes/api.js'));
 
 exports.app = app;
