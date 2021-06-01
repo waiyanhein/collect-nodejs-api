@@ -20,7 +20,7 @@ const config = {
     password: process.env.MAIL_PASSWORD,
     host: process.env.MAIL_HOST,
     port: process.env.MAIL_PORT,
-    service: (isTest)? "mock": process.env.MAIL_SERVICE
+    service: process.env.MAIL_SERVICE
   }
 }
 

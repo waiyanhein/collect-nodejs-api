@@ -21,6 +21,7 @@
 - Sending email
 - npm install nodemailer --save https://stackabuse.com/how-to-send-emails-with-node-js/
 - npm install nodemailer-mock --save-dev https://www.npmjs.com/package/nodemailer-mock (For mocking nodemailer)
+- npm install faker --save-dev https://www.npmjs.com/package/faker
 
 ### Database Driver - install one of the followings
 $ npm install --save pg pg-hstore # Postgres
