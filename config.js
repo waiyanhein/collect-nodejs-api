@@ -1,3 +1,5 @@
+const isTest = process.env.JEST_WORKER_ID;
+
 const config = {
   appName: process.env.APP_NAME,
   appEnv: process.env.NODE_ENV, // if there is jest worker id, no matter what env is set, it will always be test.
