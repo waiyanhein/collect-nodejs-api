@@ -87,10 +87,6 @@ login = async ({ email, password }) => {
   }
 }
 
-logout = (data) => {
-
-}
-
 me = async (token) => {
   return new Promise(function(resolve, reject) {
     if (! token) {
@@ -119,5 +115,4 @@ me = async (token) => {
 
 exports.register = register;
 exports.login = login;
-exports.logout = logout;
 exports.me = me;
