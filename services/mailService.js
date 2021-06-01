@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+//to be able to test.
 const config = require('../config.js');
 
 // if the service is present, host and port are not used.

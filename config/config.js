@@ -14,6 +14,7 @@ module.exports = {
       bigNumberStrings: true
     }
   },
+  // jest is using this.
   test: {
     username: config.database.username,
     password: config.database.password,
