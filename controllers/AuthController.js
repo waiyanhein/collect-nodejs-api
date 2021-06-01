@@ -5,10 +5,7 @@ let config = require('../config.js');
 let models = require('../models');
 const { Op } = require("sequelize");
 let User = models.User;
-
-const hashPassword = (plainPassword) => {
-  return bcrypt.hashSync(plainPassword, 8);
-}
+const authService = require('../services/authService.js');
 
 const checkPassword = async (plainText, hash) => {
   let valid = await bcrypt.compare(plainText, hash);
@@ -22,78 +19,28 @@ const register = async (req, res) => {
     return res.status(400).json(validationResult);
   }
 
-  try {
-    let user = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: hashPassword(req.body.password)
-    })
+  let result = await authService.register(req.body);
+  if (result.error) {
+    res.status(500).json(result);
+  } else {
+    //TODO: send the welcome email here to confirm the account
 
-    res.status(200)
-    .json({
-      error: false,
-      data: user
-    })
-  } catch (e) {
-    res.status(500)
-    .json({
-      error: true,
-      message: e.message
-    })
+    res.status(200).json(result);
   }
 }
 
-//TODO: check the password
 const login = async (req, res) => {
   const validationResult = validators.validate(req);
   if (validationResult.error) {
     return res.status(400).json(validationResult);
   }
 
-  try {
-    let user = await User.findOne({
-      where: {
-        email: {
-          [Op.eq]: req.body.email
-        }
-      }
-    })
-
-    if (user) {
-      let isPasswordValid = await checkPassword(req.body.password, user.password);
-
-      if (! isPasswordValid) {
-        return res.status(400).json({
-          error: true,
-          message: "Password is not valid."
-        })
-      }
-      // generate the token
-      let info = { id: user.id, name: user.name, email: user.email };
-      var token = jwt.sign(info, config.auth.jwtSecret, {
-        expiresIn: config.auth.expiresIn
-      })
-
-      res
-      .status(200)
-      .json({
-        error: false,
-        token: token,
-        data: info
-      })
-    } else {
-      res.status(400).json({
-        error: true,
-        message: "User not found."
-      })
-    }
-  } catch (e) {
-    res.status(500)
-    .json({
-      error: true,
-      message: e.message
-    })
+  let result = await authService.login(req.body);
+  if (result.error) {
+    res.status(result.code).json(result);
   }
+
+  res.status(200).json(result);
 }
 
 const me = (req, res) => {
