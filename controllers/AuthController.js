@@ -2,10 +2,8 @@ let jwt = require('jsonwebtoken');
 let bcrypt = require('bcryptjs');
 let validators = require('../utilities/validators.js');
 let config = require('../config.js');
-let models = require('../models');
-const { Op } = require("sequelize");
-let User = models.User;
 const authService = require('../services/authService.js');
+const mailService = require('../services/mailService.js');
 
 const checkPassword = async (plainText, hash) => {
   let valid = await bcrypt.compare(plainText, hash);
@@ -23,7 +21,8 @@ const register = async (req, res) => {
   if (result.error) {
     res.status(500).json(result);
   } else {
-    //TODO: send the welcome email here to confirm the account
+    // send the welcome email here to confirm the account
+    await mailService.sendConfirmRegistration(result.data);
 
     res.status(200).json(result);
   }
@@ -44,25 +43,13 @@ const login = async (req, res) => {
 }
 
 const me = (req, res) => {
-  let token = req.auth.access_token;
-
-  if (! token) {
-    // token not passed
-    return res.status(400).json({
-      error: true,
-      message: "Token is missing."
-    })
-  }
-
-  jwt.verify(token, config.auth.jwtSecret, (err, decoded) => {
-    if (err) {
-      return res.status(400).json({ error: true, message: "Invalid token." });
+  authService.me(req.auth.access_token)
+  .then(result => {
+    if (result.error) {
+      res.status(result.code).json(result)
+    } else {
+      res.status(200).json(result);
     }
-
-    res.status(200).send({
-      error: false,
-      data: decoded
-    });
   })
 }
 

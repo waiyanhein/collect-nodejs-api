@@ -91,8 +91,30 @@ logout = (data) => {
 
 }
 
-me = (data) => {
+me = async (token) => {
+  return new Promise(function(resolve, reject) {
+    if (! token) {
+      // token not passed
+      resolve({
+        error: true,
+        code: 400,
+        message: "Token is missing."
+      });
+      return;
+    }
 
+    jwt.verify(token, config.auth.jwtSecret, (err, decoded) => {
+      if (err) {
+        resolve({ error: true, code: 400, message: "Invalid token." })
+        return
+      }
+
+      resolve({
+        error: false,
+        data: decoded
+      })
+    })
+  });
 }
 
 exports.register = register;

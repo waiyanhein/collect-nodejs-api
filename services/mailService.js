@@ -56,9 +56,18 @@ const sendConfirmRegistration = async (user) => {
       subject: `Welcome to ${config.appName}`,
       body: `Welcome to ${config.appName}. Your registration has been successful. Please, confirm your account clicking on the link below.`
     })
+
+    return {
+      error: false
+    }
   } catch (e) {
     //TOOD: send error to sentry
     console.log(e);
+    return {
+      code: 500,
+      error: true,
+      message: e.message
+    }
   }
 }
 
