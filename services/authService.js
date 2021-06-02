@@ -1,12 +1,12 @@
 let jwt = require('jsonwebtoken');
 let bcrypt = require('bcryptjs');
-let validators = require('../utilities/validators.js');
 let config = require('../config.js');
 let models = require('../models');
 const { Op } = require("sequelize");
 const crypto = require("crypto");
 const date = require('date-and-time');
-let User = models.User;
+let validators = require('../utilities/validators.js');
+let userService = require('./userService.js');
 let VerificationToken = models.VerificationToken;
 
 const generateVerificationToken = () => {
@@ -25,15 +25,15 @@ const checkPassword = async (plainText, hash) => {
 
 register = async ({ name, email, password }) => {
   try {
-    let user = await User.create({
-      name: name,
-      email: email,
-      password: hashPassword(password)
-    })
+    let userResult = await userService.create({ name: name, email: email, password:hashPassword(password)  })
 
-    return {
-      error: false,
-      data: user
+    if (userResult.user) {
+      return {
+        error: false,
+        data: userResult.data
+      }
+    } else {
+      return userResult;
     }
   } catch (e) {
     return {
@@ -46,13 +46,8 @@ register = async ({ name, email, password }) => {
 
 login = async ({ email, password }) => {
   try {
-    let user = await User.findOne({
-      where: {
-        email: {
-          [Op.eq]: email
-        }
-      }
-    })
+    let userResult = await userService.findUserByEmail(email);
+    let user = userResult.data;
 
     if (user) {
       let isPasswordValid = await checkPassword(password, user.password);
@@ -150,17 +145,11 @@ generateAccountVerificationLink = async (user) => {
   }
 }
 
-//TODO: also check if the token has already been verified.
-//TOOD: also add the verifiedAt column
+//TODO: check if the expiresAt is working
 const  verifyVerificationToken = async ({ email, token }) => {
   try {
-    let user = await User.findOne({
-      where: {
-        email: {
-          [Op.eq]: email
-        }
-      }
-    })
+    let userResult = await userService.findUserByEmail(email);
+    let user = userResult.data;
 
     if (! user) {
       return {

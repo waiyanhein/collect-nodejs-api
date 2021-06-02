@@ -1,15 +1,7 @@
-let jwt = require('jsonwebtoken');
-let bcrypt = require('bcryptjs');
 let validators = require('../utilities/validators.js');
 let config = require('../config.js');
 const authService = require('../services/authService.js');
 const mailService = require('../services/mailService.js');
-
-const checkPassword = async (plainText, hash) => {
-  let valid = await bcrypt.compare(plainText, hash);
-
-  return valid;
-}
 
 const register = async (req, res) => {
   const validationResult = validators.validate(req);
@@ -81,7 +73,13 @@ const sendResetPasswordEmail = (req, res) => {
 
 }
 
+const resendConfirmRegistrationEmail = (req, res) => {
+  //TODO: validate.
+  // checking if the user accout exists by email is already done by the validation
+}
+
 exports.register = register;
 exports.login = login;
 exports.me = me;
 exports.verifyVerificationToken =  verifyVerificationToken;
+exports.resendConfirmRegistrationEmail = resendConfirmRegistrationEmail;
