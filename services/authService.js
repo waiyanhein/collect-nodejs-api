@@ -4,7 +4,14 @@ let validators = require('../utilities/validators.js');
 let config = require('../config.js');
 let models = require('../models');
 const { Op } = require("sequelize");
+const crypto = require("crypto");
+const date = require('date-and-time');
 let User = models.User;
+let VerificationToken = models.VerificationToken;
+
+const generateVerificationToken = () => {
+  return crypto.randomBytes(32).toString("hex");
+}
 
 const hashPassword = (plainPassword) => {
   return bcrypt.hashSync(plainPassword, 8);
@@ -113,6 +120,37 @@ me = async (token) => {
   });
 }
 
+generateAccountVerificationLink = async (user) => {
+  try {
+    let verificationToken = generateVerificationToken();
+    let now = new Date();
+    let expiresAt = date.addSeconds(now, config.auth.accountVerificationLinkLifespan);
+
+    await VerificationToken.create({
+      userId: user.id,
+      expiresAt: expiresAt,
+      verificationToken: verificationToken
+    })
+
+    let verificationLink = `${config.baseUrl}/auth/verify-account?email=${user.email}&token=${verificationToken}`;
+
+    return {
+      error: false,
+      data: {
+        link: verificationLink
+      }
+    }
+  } catch (e) {
+
+    return {
+      error: true,
+      code: 500,
+      message: e.message
+    }
+  }
+}
+
 exports.register = register;
 exports.login = login;
 exports.me = me;
+exports.generateAccountVerificationLink = generateAccountVerificationLink;

@@ -22,7 +22,11 @@ const register = async (req, res) => {
     res.status(500).json(result);
   } else {
     // send the welcome email here to confirm the account
-    await mailService.sendConfirmRegistration(result.data);
+    // generate the account verification link
+    let verificationLinkResult = await authService.generateAccountVerificationLink(result.data);
+    if (! verificationLinkResult.error) {
+        await mailService.sendConfirmRegistration(result.data, verificationLinkResult.data.link);
+    }
 
     res.status(200).json(result);
   }

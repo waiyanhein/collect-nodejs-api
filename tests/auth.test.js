@@ -26,6 +26,7 @@ afterEach(async () => {
   await database.sequelize.sync({
     force: true
   })
+  mock.reset();
   await server.close(() => {
 
   })
@@ -73,7 +74,7 @@ describe("Auth Test", () => {
     expect(res.statusCode).toEqual(200);
     const sentEmails = mock.getSentMail();
     // there should be one
-    //expect(sentEmails.length).toBe(1);
+    expect(sentEmails.length).toBe(1);
   })
 
   it("cannot register new account when the email is already taken", async () => {

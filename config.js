@@ -2,10 +2,13 @@ const isTest = process.env.JEST_WORKER_ID;
 
 const config = {
   appName: process.env.APP_NAME,
+  baseUrl: process.env.BASE_URL,
   appEnv: (isTest)? "test": process.env.NODE_ENV, // if there is jest worker id, no matter what env is set, it will always be test.
   auth: {
     jwtSecret: process.env.JWT_SECRET,
-    expiresIn: process.env.AUTH_TOKEN_EXPIRES_IN // in seconds
+    expiresIn: process.env.AUTH_TOKEN_EXPIRES_IN, // in seconds
+    passwordResetLinkLifespan: process.env.PASSWORD_RESET_LINK_LIFESPAN,
+    accountVerificationLinkLifespan: process.env.ACCOUNT_VERFICATION_LINK_LIFESPAN
   },
   database: {
     dialect: process.env.DB_DIALECT,

@@ -22,6 +22,8 @@
 - npm install nodemailer --save https://stackabuse.com/how-to-send-emails-with-node-js/
 - npm install nodemailer-mock --save-dev https://www.npmjs.com/package/nodemailer-mock (For mocking nodemailer)
 - npm install faker --save-dev https://www.npmjs.com/package/faker
+- npm install uuid --save // used to generate verification tokens -> https://www.npmjs.com/package/uuid
+- npm install date-and-time --save // for manupulating date and time //https://www.npmjs.com/package/date-and-time
 
 ### Database Driver - install one of the followings
 $ npm install --save pg pg-hstore # Postgres
@@ -35,6 +37,7 @@ $ npm install --save tedious # Microsoft SQL Server
 -> Creating first model -> `npx sequelize-cli model:generate --name User --attributes firstName:string,lastName:string,email:string`
 - Run migrations -> `npx sequelize-cli db:migrate`
 - Undo migrations -> `npx sequelize-cli db:migrate:undo`
+- Undo all migrations -> `npx sequelize-cli db:migrate:undo:all`
 
 ### Running the application locally
 - npm install

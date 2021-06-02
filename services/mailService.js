@@ -50,12 +50,12 @@ const sendMail = async ({
   });
 }
 
-const sendConfirmRegistration = async (user) => {
+const sendConfirmRegistration = async (user, accountVerificationLink) => {
   try {
     await sendMail({
       to: user.email,
       subject: `Welcome to ${config.appName}`,
-      body: `Welcome to ${config.appName}. Your registration has been successful. Please, confirm your account clicking on the link below.`
+      body: `Welcome to ${config.appName}. Your registration has been successful. Please, confirm your account clicking the link, ${accountVerificationLink}`
     })
 
     return {
