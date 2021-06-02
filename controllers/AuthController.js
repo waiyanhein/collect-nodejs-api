@@ -2,6 +2,7 @@ let validators = require('../utilities/validators.js');
 let config = require('../config.js');
 const authService = require('../services/authService.js');
 const mailService = require('../services/mailService.js');
+const userService = require('../services/userService.js');
 
 const register = async (req, res) => {
   const validationResult = validators.validate(req);
@@ -73,9 +74,25 @@ const sendResetPasswordEmail = (req, res) => {
 
 }
 
-const resendConfirmRegistrationEmail = (req, res) => {
+const resendConfirmRegistrationEmail = async (req, res) => {
   //TODO: validate.
   // checking if the user accout exists by email is already done by the validation
+  let userResult = await userService.findUserByEmail(req.body.email);
+
+  if (userResult.error) {
+      return res.status(userResult.code).json(userResult);
+  }
+
+  let verificationLinkResult = await authService.generateAccountVerificationLink(userResult.data);
+  if (verificationLinkResult.error) {
+      return res.status(verificationLinkResult.status).json(verificationLinkResult);
+  }
+
+  await mailService.sendConfirmRegistration(userResult.data, verificationLinkResult.data.link);
+
+  return res.status(200).json({
+    error: false
+  })
 }
 
 exports.register = register;

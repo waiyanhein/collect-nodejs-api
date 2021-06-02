@@ -226,4 +226,4 @@ exports.register = register;
 exports.login = login;
 exports.me = me;
 exports.generateAccountVerificationLink = generateAccountVerificationLink;
-exports. verifyVerificationToken =  verifyVerificationToken;
+exports.verifyVerificationToken =  verifyVerificationToken;
