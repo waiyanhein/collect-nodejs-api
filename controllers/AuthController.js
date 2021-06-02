@@ -70,8 +70,24 @@ const resetPassword = (req, res) => {
   // verify the token here too
 }
 
-const sendResetPasswordEmail = (req, res) => {
+const sendResetPasswordEmail = async (req, res) => {
+  // TODO: validate
+  let userResult = await userService.findUserByEmail(req.body.email);
 
+  if (userResult.error) {
+    return res.status(userResult.code).json(userResult);
+  }
+
+  let passwordResetLinkResult = await authService.generateResetPasswordLink(userResult.data);
+  if (passwordResetLinkResult.error) {
+    return res.status(passwordResetLinkResult.status).json(passwordResetLinkResult);
+  }
+
+  await mailService.sendResetPassword(userResult.data, passwordResetLinkResult.data.link);
+
+  return res.status(200).json({
+    error: false
+  })
 }
 
 const resendConfirmRegistrationEmail = async (req, res) => {
@@ -100,3 +116,4 @@ exports.login = login;
 exports.me = me;
 exports.verifyVerificationToken =  verifyVerificationToken;
 exports.resendConfirmRegistrationEmail = resendConfirmRegistrationEmail;
+exports.sendResetPasswordEmail = sendResetPasswordEmail;

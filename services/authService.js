@@ -9,6 +9,27 @@ let validators = require('../utilities/validators.js');
 let userService = require('./userService.js');
 let VerificationToken = models.VerificationToken;
 
+const createVerificationToken = async (data) => {
+  try {
+    let token = await VerificationToken.create({
+      userId: data.userId,
+      expiresAt: data.expiresAt,
+      verificationToken: data.verificationToken
+    })
+
+    return {
+      error: false,
+      data: token
+    }
+  } catch (e) {
+    return {
+      error: true,
+      message: e.message,
+      code: 500
+    }
+  }
+}
+
 const generateVerificationToken = () => {
   return crypto.randomBytes(32).toString("hex");
 }
@@ -115,32 +136,52 @@ me = async (token) => {
   });
 }
 
-generateAccountVerificationLink = async (user) => {
-  try {
-    let verificationToken = generateVerificationToken();
-    let now = new Date();
-    let expiresAt = date.addSeconds(now, config.auth.accountVerificationLinkLifespan);
+generateResetPasswordLink = async (user) => {
+  let verificationToken = generateVerificationToken();
+  let now = new Date();
+  let expiresAt = date.addSeconds(now, config.auth.passwordResetLinkLifespan);
 
-    await VerificationToken.create({
-      userId: user.id,
-      expiresAt: expiresAt,
-      verificationToken: verificationToken
-    })
+  let tokenResult = await createVerificationToken({
+    userId: user.id,
+    expiresAt: expiresAt,
+    verificationToken: verificationToken
+  });
 
-    let verificationLink = `${config.baseUrl}/auth/verify-account?email=${user.email}&token=${verificationToken}`;
+  if (tokenResult.error) {
+    return tokenResult;
+  }
 
-    return {
-      error: false,
-      data: {
-        link: verificationLink
-      }
+  let passwordResetLink = `${config.baseUrl}/auth/reset-password?email=${user.email}&token=${verificationToken}`;
+
+  return {
+    error: false,
+    data: {
+      link: passwordResetLink
     }
-  } catch (e) {
+  }
+}
 
-    return {
-      error: true,
-      code: 500,
-      message: e.message
+generateAccountVerificationLink = async (user) => {
+  let verificationToken = generateVerificationToken();
+  let now = new Date();
+  let expiresAt = date.addSeconds(now, config.auth.accountVerificationLinkLifespan);
+
+  let tokenResult = await createVerificationToken({
+    userId: user.id,
+    expiresAt: expiresAt,
+    verificationToken: verificationToken
+  });
+
+  if (tokenResult.error) {
+    return tokenResult;
+  }
+
+  let verificationLink = `${config.baseUrl}/auth/verify-account?email=${user.email}&token=${verificationToken}`;
+
+  return {
+    error: false,
+    data: {
+      link: verificationLink
     }
   }
 }
@@ -226,4 +267,5 @@ exports.register = register;
 exports.login = login;
 exports.me = me;
 exports.generateAccountVerificationLink = generateAccountVerificationLink;
+exports.generateResetPasswordLink = generateResetPasswordLink;
 exports.verifyVerificationToken =  verifyVerificationToken;

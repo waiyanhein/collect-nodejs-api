@@ -72,4 +72,26 @@ const sendConfirmRegistration = async (user, accountVerificationLink) => {
   }
 }
 
+const sendResetPassword = async (user, resetPasswordLink) => {
+  try {
+    await sendMail({
+      to: user.email,
+      subject: "Reset Password",
+      body: `To reset your password, please, click the link, ${resetPasswordLink}`
+    })
+
+    return {
+      error: false
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      code: 500,
+      error: true,
+      message: e.message
+    }
+  }
+}
+
 exports.sendConfirmRegistration = sendConfirmRegistration;
+exports.sendResetPassword = sendResetPassword;
