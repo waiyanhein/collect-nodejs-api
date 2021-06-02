@@ -187,7 +187,7 @@ generateAccountVerificationLink = async (user) => {
 }
 
 //TODO: check if the expiresAt is working
-const  verifyVerificationToken = async ({ email, token }) => {
+const verifyVerificationToken = async ({ email, token }) => {
   try {
     let userResult = await userService.findUserByEmail(email);
     let user = userResult.data;
@@ -261,6 +261,10 @@ const  verifyVerificationToken = async ({ email, token }) => {
       message: e.message
     }
   }
+}
+
+const resetPassword = ({ email, newPassword }) => {
+  
 }
 
 exports.register = register;

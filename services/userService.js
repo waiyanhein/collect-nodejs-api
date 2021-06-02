@@ -55,5 +55,10 @@ const findUserByEmail = async (email) => {
   }
 }
 
+const update = async (data) => {
+
+}
+
 exports.create = create;
 exports.findUserByEmail = findUserByEmail;
+exports.update = update;
