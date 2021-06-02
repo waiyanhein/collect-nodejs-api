@@ -9,5 +9,6 @@ router.post('/auth/register', validators.auth.register, authController.register)
 router.post('/auth/login', validators.auth.login, authController.login);
 // me should be the protected route
 router.get('/auth/me', authController.me);
+router.post('/auth/verify-verification-token', authController.verifyVerificationToken);
 
 module.exports = router;

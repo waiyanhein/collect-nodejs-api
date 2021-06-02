@@ -22,6 +22,10 @@ module.exports = {
       verificationToken: {
         type: Sequelize.STRING
       },
+      verifiedAt: {
+        allowNull: true,
+        type: Sequelize.DATE
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

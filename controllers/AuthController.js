@@ -57,8 +57,20 @@ const me = (req, res) => {
   })
 }
 
-const verifyResetPasswordToken = (req, res) => {
+// used by both reset password and the account verification links
+const verifyVerificationToken = async (req, res) => {
+  // TODO: validate.
 
+  let result = await authService.verifyVerificationToken({
+    email: req.body.email,
+    token: req.body.token
+  });
+
+  if (result.error) {
+    return res.status(result.code).json(result);
+  } else {
+    return res.status(200).json(result);
+  }
 }
 
 const resetPassword = (req, res) => {
@@ -69,10 +81,7 @@ const sendResetPasswordEmail = (req, res) => {
 
 }
 
-const verifyAccount = (req, res) => {
-
-}
-
 exports.register = register;
 exports.login = login;
 exports.me = me;
+exports.verifyVerificationToken =  verifyVerificationToken;

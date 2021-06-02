@@ -17,7 +17,8 @@ module.exports = (sequelize, DataTypes) => {
   VerificationToken.init({
     userId: DataTypes.INTEGER,
     expiresAt: DataTypes.DATE,
-    verificationToken: DataTypes.STRING
+    verificationToken: DataTypes.STRING,
+    verifiedAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'VerificationToken',

@@ -150,7 +150,91 @@ generateAccountVerificationLink = async (user) => {
   }
 }
 
+//TODO: also check if the token has already been verified.
+//TOOD: also add the verifiedAt column
+const  verifyVerificationToken = async ({ email, token }) => {
+  try {
+    let user = await User.findOne({
+      where: {
+        email: {
+          [Op.eq]: email
+        }
+      }
+    })
+
+    if (! user) {
+      return {
+        error: true,
+        code: 400,
+        message: "Invalid account."
+      }
+    }
+
+    let tokenModel = await VerificationToken.findOne({
+      where: {
+        userId: {
+          [Op.eq]: user.id
+        },
+        verificationToken: {
+          [Op.eq]: token
+        }
+      }
+    })
+
+    if (! tokenModel) {
+      return {
+        error: true,
+        code: 400,
+        message: "Invalid token."
+      }
+    }
+
+    // check if the token is expired
+    let now = new Date();
+    if (now.getTime() < tokenModel.expiresAt.getTime()) {
+      // check if the token is already verified
+      if (tokenModel.verifiedAt) {
+        // already verified
+        return {
+          error: true,
+          message: "Token has already been used",
+          code: 400
+        }
+      }
+
+      // update the verifiedAt column
+      await VerificationToken.update({
+        verifiedAt: now
+      }, {
+        where: {
+          id: {
+            [Op.eq]: tokenModel.id
+          }
+        }
+      })
+
+      return {
+        error: false
+      }
+    } else {
+        // token is expired
+        return {
+          error: true,
+          code: 400,
+          message: "Token been expired."
+        }
+    }
+  } catch (e) {
+    return {
+      error: true,
+      code: 500,
+      message: e.message
+    }
+  }
+}
+
 exports.register = register;
 exports.login = login;
 exports.me = me;
 exports.generateAccountVerificationLink = generateAccountVerificationLink;
+exports. verifyVerificationToken =  verifyVerificationToken;
