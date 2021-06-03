@@ -40,6 +40,13 @@ const login = async (req, res) => {
 }
 
 const me = (req, res) => {
+  if (! req.auth.access_token) {
+    return res.status(401).json({
+      error: true,
+      message: "Access token is missing."
+    })
+  }
+
   authService.me(req.auth.access_token)
   .then(result => {
     if (result.error) {
@@ -52,7 +59,10 @@ const me = (req, res) => {
 
 // used by both reset password and the account verification links
 const verifyVerificationToken = async (req, res) => {
-  // TODO: validate.
+  const validationResult = validators.validate(req);
+  if (validationResult.error) {
+    return res.status(400).json(validationResult);
+  }
 
   let result = await authService.verifyVerificationToken({
     email: req.body.email,
@@ -71,7 +81,11 @@ const resetPassword = (req, res) => {
 }
 
 const sendResetPasswordEmail = async (req, res) => {
-  // TODO: validate
+  const validationResult = validators.validate(req);
+  if (validationResult.error) {
+    return res.status(400).json(validationResult);
+  }
+
   let userResult = await userService.findUserByEmail(req.body.email);
 
   if (userResult.error) {
@@ -91,7 +105,11 @@ const sendResetPasswordEmail = async (req, res) => {
 }
 
 const resendConfirmRegistrationEmail = async (req, res) => {
-  //TODO: validate.
+  const validationResult = validators.validate(req);
+  if (validationResult.error) {
+    return res.status(400).json(validationResult);
+  }
+
   // checking if the user accout exists by email is already done by the validation
   let userResult = await userService.findUserByEmail(req.body.email);
 
