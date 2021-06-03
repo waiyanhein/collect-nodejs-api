@@ -14,7 +14,6 @@ const register = async (req, res) => {
   if (result.error) {
     res.status(500).json(result);
   } else {
-    // send the welcome email here to confirm the account
     // generate the account verification link
     let verificationLinkResult = await authService.generateAccountVerificationLink(result.data);
     if (! verificationLinkResult.error) {
@@ -78,6 +77,10 @@ const verifyVerificationToken = async (req, res) => {
 
 const resetPassword = (req, res) => {
   // verify the token here too
+  const validationResult = validators.validate(req);
+  if (validationResult.error) {
+    return res.status(400).json(validationResult);
+  }
 }
 
 const sendResetPasswordEmail = async (req, res) => {

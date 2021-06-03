@@ -1,5 +1,18 @@
 const { body, validationResult } = require('express-validator');
 const userService = require('../services/userService.js');
+const authService = require('../services/authService.js');
+
+const isVerificationTokenValid = async ({
+  token,
+  email
+}) => {
+  let verificationResult = await authService.verifyVerificationToken({
+    email: email,
+    token: token
+  });
+
+  return ! verificationResult.error;
+}
 
 const isEmailAlreadyTaken = async (emailInput) => {
   let userResult = await userService.findUserByEmail(emailInput);
@@ -9,6 +22,13 @@ const isEmailAlreadyTaken = async (emailInput) => {
   } else {
     return false;
   }
+}
+
+const isOldPassword = async ({
+  email,
+  password
+}) => {
+
 }
 
 // exact same logic as isEmailAlreadyTaken. Just want to clear the little philosophy in my head.
@@ -67,6 +87,36 @@ const auth = {
         }
       })
     })
+  ],
+  resetPassword: [
+    body('email').not().isEmpty().withMessage("Email is required."),
+    body('email').isEmail().withMessage('Email format is not valid.'),
+    body("email").custom(value => {
+      return accountEmailExists(value).then(emailExists => {
+        if (! emailExists) {
+          return Promise.reject("User account with the email does not exist.");
+        }
+      })
+    }),
+    body("token").custom((value, { req }) => {
+      return isVerificationTokenValid({
+        email: req.body.email,
+        token: value
+      }).then(isValid => {
+        if (! isValid) {
+          return Promise.reject("Invalid token.");
+        }
+      })
+    }),
+    body('password').not().isEmpty().withMessage("New password is required."),
+    body("confirm_password").custom((value, { req }) => {
+      if (value != req.body.password) {
+        throw new Error("Password fields do not match.");
+      }
+
+      return true;
+    })
+    //TODO: also check it is not the old password.
   ]
 }
 
