@@ -81,6 +81,10 @@ const resetPassword = (req, res) => {
   if (validationResult.error) {
     return res.status(400).json(validationResult);
   }
+
+  return res.status(200).json({
+    error: false
+  })
 }
 
 const sendResetPasswordEmail = async (req, res) => {
@@ -138,3 +142,4 @@ exports.me = me;
 exports.verifyVerificationToken =  verifyVerificationToken;
 exports.resendConfirmRegistrationEmail = resendConfirmRegistrationEmail;
 exports.sendResetPasswordEmail = sendResetPasswordEmail;
+exports.resetPassword = resetPassword;

@@ -264,7 +264,7 @@ const verifyVerificationToken = async ({ email, token }) => {
 }
 
 const resetPassword = ({ email, newPassword }) => {
-  
+
 }
 
 exports.register = register;
@@ -273,3 +273,5 @@ exports.me = me;
 exports.generateAccountVerificationLink = generateAccountVerificationLink;
 exports.generateResetPasswordLink = generateResetPasswordLink;
 exports.verifyVerificationToken =  verifyVerificationToken;
+exports.hashPassword = hashPassword;
+exports.checkPassword = checkPassword;

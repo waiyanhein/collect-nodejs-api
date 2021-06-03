@@ -24,13 +24,6 @@ const isEmailAlreadyTaken = async (emailInput) => {
   }
 }
 
-const isOldPassword = async ({
-  email,
-  password
-}) => {
-
-}
-
 // exact same logic as isEmailAlreadyTaken. Just want to clear the little philosophy in my head.
 const accountEmailExists = async (emailInput) => {
   let userResult = await userService.findUserByEmail(emailInput);
@@ -40,6 +33,17 @@ const accountEmailExists = async (emailInput) => {
   } else {
     return false;
   }
+}
+
+const isOldPassword = async ({
+  email,
+  password
+}) => {
+  let userResult = await userService.findUserByEmail(email);
+
+  let isValidPassword = await authService.checkPassword(password, userResult.data.password);
+
+  return isValidPassword;
 }
 
 const auth = {
@@ -109,6 +113,17 @@ const auth = {
       })
     }),
     body('password').not().isEmpty().withMessage("New password is required."),
+    body("password").custom((value, { req }) => {
+      return isOldPassword({
+        email: req.body.email,
+        password: value
+      }).then(isOldPassword => {
+        if (isOldPassword) {
+          return Promise.reject("You have provided the old password");
+        }
+      })
+    }),
+    body('confirm_password').not().isEmpty().withMessage("Please confirm the password."),
     body("confirm_password").custom((value, { req }) => {
       if (value != req.body.password) {
         throw new Error("Password fields do not match.");
@@ -116,7 +131,6 @@ const auth = {
 
       return true;
     })
-    //TODO: also check it is not the old password.
   ]
 }
 
