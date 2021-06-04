@@ -9,6 +9,7 @@ router.post('/auth/register', validators.auth.register, authController.register)
 router.post('/auth/login', validators.auth.login, authController.login);
 // me should be the protected route
 router.get('/auth/me', authController.me);
+router.post('/auth/validate-verification-token', validators.auth.verifyVerificationToken, authController.validateVerificationToken);
 router.post('/auth/verify-verification-token', validators.auth.verifyVerificationToken, authController.verifyVerificationToken);
 router.post('/auth/resend-confirm-registration-email', validators.auth.resendConfirmRegistrationEmail, authController.resendConfirmRegistrationEmail);
 router.post('/auth/send-resetpassword-link', validators.auth.sendResetPasswordEmail, authController.sendResetPasswordEmail);

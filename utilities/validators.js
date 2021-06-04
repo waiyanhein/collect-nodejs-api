@@ -6,7 +6,7 @@ const isVerificationTokenValid = async ({
   token,
   email
 }) => {
-  let verificationResult = await authService.verifyVerificationToken({
+  let verificationResult = await authService.validateVerificationToken({
     email: email,
     token: token
   });

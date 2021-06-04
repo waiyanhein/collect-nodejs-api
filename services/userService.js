@@ -55,8 +55,30 @@ const findUserByEmail = async (email) => {
   }
 }
 
+// only the fields supplied to the data will be updated.
 const update = async (data) => {
+  try {
+    let id = data.id;
+    delete data.id;
 
+    await User.update(data, {
+      where: {
+        id: {
+          [Op.eq]: id
+        }
+      }
+    })
+
+    return {
+      error: false
+    }
+  } catch (e) {
+    return {
+      error: true,
+      message: e.message,
+      code: 500
+    }
+  }
 }
 
 exports.create = create;

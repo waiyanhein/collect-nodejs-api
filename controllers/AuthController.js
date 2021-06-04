@@ -56,35 +56,66 @@ const me = (req, res) => {
   })
 }
 
+// only validate if the token is valid
+const validateVerificationToken = async (req, res) => {
+  const validationResult = validators.validate(req);
+  if (validationResult.error) {
+    return res.status(400).json(validationResult);
+  }
+
+  let validateResult = await authService.validateVerificationToken({
+    email: req.body.email,
+    token: req.body.token
+  });
+
+  if (validateResult.error) {
+    return res.status(validateResult.code).json(validateResult);
+  } else {
+    return res.status(200).json(validateResult);
+  }
+}
+
 // used by both reset password and the account verification links
+// verify means validate and expires the token marking it as verified if it is valid
 const verifyVerificationToken = async (req, res) => {
   const validationResult = validators.validate(req);
   if (validationResult.error) {
     return res.status(400).json(validationResult);
   }
 
-  let result = await authService.verifyVerificationToken({
+  let validateResult = await authService.validateVerificationToken({
     email: req.body.email,
     token: req.body.token
   });
 
-  if (result.error) {
-    return res.status(result.code).json(result);
+  if (validateResult.error) {
+    return res.status(validateResult.code).json(validateResult);
   } else {
-    return res.status(200).json(result);
+    let tokenUpdateResult = await authService.markVerificationTokenAsVerified(validateResult.data);
+    if (tokenUpdateResult.error) {
+      return res.status(tokenUpdateResult.error).json(tokenUpdateResult);
+    } else {
+      return res.status(200).json(validateResult);
+    }
   }
 }
 
-const resetPassword = (req, res) => {
-  // verify the token here too
+const resetPassword = async (req, res) => {
   const validationResult = validators.validate(req);
   if (validationResult.error) {
     return res.status(400).json(validationResult);
   }
 
-  return res.status(200).json({
-    error: false
+  let resetPasswordResult = await authService.resetPassword({
+    email: req.body.email,
+    newPassword: req.body.password
   })
+
+  if (resetPasswordResult.error) {
+    return res.status(resetPasswordResult.code).json(resetPasswordResult);
+  }
+
+  return res.status(200).json({ error: false });
 }
 
 const sendResetPasswordEmail = async (req, res) => {
@@ -140,6 +171,7 @@ exports.register = register;
 exports.login = login;
 exports.me = me;
 exports.verifyVerificationToken =  verifyVerificationToken;
+exports.validateVerificationToken = validateVerificationToken;
 exports.resendConfirmRegistrationEmail = resendConfirmRegistrationEmail;
 exports.sendResetPasswordEmail = sendResetPasswordEmail;
 exports.resetPassword = resetPassword;

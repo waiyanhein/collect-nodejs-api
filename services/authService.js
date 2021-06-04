@@ -186,8 +186,33 @@ generateAccountVerificationLink = async (user) => {
   }
 }
 
+const markVerificationTokenAsVerified = async (tokenModel) => {
+  try {
+    // update the verifiedAt column
+    await VerificationToken.update({
+      verifiedAt: new Date()
+    }, {
+      where: {
+        id: {
+          [Op.eq]: tokenModel.id
+        }
+      }
+    })
+
+    return {
+      error: false
+    }
+  } catch (e) {
+    return {
+      error: true,
+      code: 500,
+      message: e.message
+    }
+  }
+}
+
 //TODO: check if the expiresAt is working
-const verifyVerificationToken = async ({ email, token }) => {
+const validateVerificationToken = async ({ email, token }) => {
   try {
     let userResult = await userService.findUserByEmail(email);
     let user = userResult.data;
@@ -232,19 +257,9 @@ const verifyVerificationToken = async ({ email, token }) => {
         }
       }
 
-      // update the verifiedAt column
-      await VerificationToken.update({
-        verifiedAt: now
-      }, {
-        where: {
-          id: {
-            [Op.eq]: tokenModel.id
-          }
-        }
-      })
-
       return {
-        error: false
+        error: false,
+        data: tokenModel
       }
     } else {
         // token is expired
@@ -263,8 +278,24 @@ const verifyVerificationToken = async ({ email, token }) => {
   }
 }
 
-const resetPassword = ({ email, newPassword }) => {
+const resetPassword = async ({ email, newPassword }) => {
+  let userResult = await userService.findUserByEmail(email);
 
+  if (userResult.error) {
+    return userResult;
+  }
+
+  let updateUserResult = await userService.update({
+    password: hashPassword(newPassword)
+  });
+
+  if (updateUserResult.error) {
+    return updateUserResult;
+  }
+
+  return {
+    error: false
+  }
 }
 
 exports.register = register;
@@ -272,6 +303,8 @@ exports.login = login;
 exports.me = me;
 exports.generateAccountVerificationLink = generateAccountVerificationLink;
 exports.generateResetPasswordLink = generateResetPasswordLink;
-exports.verifyVerificationToken =  verifyVerificationToken;
+exports.validateVerificationToken =  validateVerificationToken;
+exports.markVerificationTokenAsVerified = markVerificationTokenAsVerified;
+exports.resetPassword = resetPassword;
 exports.hashPassword = hashPassword;
 exports.checkPassword = checkPassword;
