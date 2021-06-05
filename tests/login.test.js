@@ -27,11 +27,18 @@ describe("Login Test", () => {
 
     expect(res.statusCode).toBe(200);
     // check the response
+    expect(res.body.error).toBe(false);
+    expect(res.body.data.hasOwnProperty('id')).toBe(true);
+    expect(res.body.data.name).toBe(testHelper.testUser.name);
+    expect(res.body.data.email).toBe(testHelper.testUser.email);
+    expect(res.body.data.hasOwnProperty('token')).toBe(true);
   })
 
   it ("login fails when the email and password are incorrect", () => {
 
   })
+
+  //TODO: test the me endpoint here.
 
   //@TODO: validation rules
   each([

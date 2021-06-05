@@ -88,10 +88,10 @@ login = async ({ email, password }) => {
       var token = jwt.sign(info, config.auth.jwtSecret, {
         expiresIn: config.auth.expiresIn
       })
+      info.token = token;
 
       return {
         error: false,
-        token: token,
         data: info
       };
     } else {
