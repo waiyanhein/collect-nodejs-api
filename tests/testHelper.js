@@ -4,6 +4,26 @@ let database = require('../utilities/database.js');
 let app = null;
 let server = null;
 
+// errors is errors field from the response when the validation fails
+const hasValidationErrorMessage = (errors, fieldName, errorMessage) => {
+  if (! Array.isArray(errors)) {
+    return false;
+  }
+
+  if (errors.length < 1) {
+    return false;
+  }
+
+  let hasExpectedMessage = false;
+  for (let i = 0; i < errors.length; i++) {
+    if (errors[i].param == fieldName && errors[i].msg == errorMessage) {
+      hasExpectedMessage = true;
+    }
+  }
+
+  return hasExpectedMessage;
+}
+
 const getApp = () => {
   if (app != null) {
     return app;
@@ -35,3 +55,4 @@ const afterEachTest = async () => {
 exports.getApp = getApp;
 exports.beforeEachTest = beforeEachTest;
 exports.afterEachTest = afterEachTest;
+exports.hasValidationErrorMessage = hasValidationErrorMessage;

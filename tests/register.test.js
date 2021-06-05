@@ -83,32 +83,76 @@ describe("Register Test", () => {
     expect(sentEmails[0].to).toBe(body.email);
   })
 
-  it("cannot register new account when the email is already taken", async () => {
-    let body = registerRequestBody();
-    let user = await User.create(body);
-    const res = await request(app).post("/api/auth/register").send(body)
-
-    expect(res.statusCode).toEqual(400);
-  })
+  const requestBody = registerRequestBody();
 
   each([
     {
       body: {
-
+        "name": "",
+        "email": requestBody.email,
+        "password": requestBody.password
       },
-      fieldName: "", // field name under test
-      expectedError: "",
+      fieldName: "name", // field name under test
+      expectedError: "Name is required.",
       before: null // sometimes you might need to run a function before each test.
     },
     {
       body: {
-
+        "name": requestBody.name,
+        "email": "",
+        "password": requestBody.password
       },
-      fieldName: "", // field name under test
-      expectedError: "",
+      fieldName: "email", // field name under test
+      expectedError: "Email is required.",
       before: null
+    },
+    {
+      body: {
+        "name": requestBody.name,
+        "email": requestBody.name,
+        "password": requestBody.password
+      },
+      fieldName: "email", // field name under test
+      expectedError: "Email format is not valid.",
+      before: null
+    },
+    {
+      body: {
+        "name": requestBody.name,
+        "email": requestBody.email,
+        "password": requestBody.password
+      },
+      fieldName: "email", // field name under test
+      expectedError: "Email address is already taken.",
+      before: async () => {
+        // seed the user with the same email
+        await User.create(requestBody);
+      }
+    },
+    {
+      body: {
+        "name": requestBody.name,
+        "email": requestBody.name,
+        "password": ""
+      },
+      fieldName: "password", // field name under test
+      expectedError: "Password is required.",
+      before: null
+    },
+  ]).test("register - validation fails when the fields are not valid", async ({ body, fieldName, expectedError, before }) => {
+    //Password is required.
+    if (before != null) {
+      if (before.constructor.name === "AsyncFunction") {
+        await before();
+      } else {
+        before();
+      }
     }
-  ]).test("register - validation fails when the fields are not valid", ({ body, fieldName, expectedError, before }) => {
-    //const isAsync = myFunction.constructor.name === "AsyncFunction";
+
+    const res = await request(app).post("/api/auth/register").send(body);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe(true);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, fieldName, expectedError)).toBe(true);
   })
 })
