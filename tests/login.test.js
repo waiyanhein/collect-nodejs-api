@@ -44,9 +44,42 @@ describe("Login Test", () => {
     expect(res.body.message).toBe('Account details are incorrect.')
   })
 
-  //TODO: test the me endpoint here.
+  it ("access token from login can fetch me information", async () => {
+    let res = await request(app).post("/api/auth/login").send(requestBody);
 
-  //@TODO: validation rules
+    expect(res.statusCode).toBe(200);
+
+    res = await request(app).get("/api/auth/me")
+    .set("Authorization", `Bearer ${res.body.data.token}`)
+    .send({ });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.error).toBe(false);
+    expect(res.body.data.hasOwnProperty('id')).toBe(true);
+    expect(res.body.data.hasOwnProperty('name')).toBe(true);
+    expect(res.body.data.hasOwnProperty('email')).toBe(true);
+  })
+
+  it ('cannot get me information when the access token is not provided', async () => {
+    let res = await request(app).get("/api/auth/me")
+    .send({ });
+
+    expect(res.statusCode).toBe(401);
+    expect(res.body.error).toBe(true);
+    expect(res.body.message).toBe('Access token is missing.');
+  })
+
+  it ('me endpoint will return error when the invalid access token is provided', async () => {
+    let res = await request(app)
+    .get("/api/auth/me")
+    .set("Authorization", `Bearer invalidtoken`)
+    .send({ });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe(true);
+    expect(res.body.message).toBe('Invalid token.');
+  })
+
   each([
     {
       body: {
