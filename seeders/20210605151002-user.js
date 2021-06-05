@@ -1,5 +1,6 @@
 'use strict';
-const authService = require('../services/authService.js');
+const userFactory = require('./factories/user.js');
+const users = userFactory.users;
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -12,18 +13,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-    let now = new Date();
-
-    await queryInterface.bulkInsert('Users', [
-      {
-        name: "tester",
-        email: "tester@gmail.com",
-        password: authService.hashPassword("password1234"),
-        createdAt: now,
-        updatedAt: now,
-        verifiedAt: now
-      }
-    ])
+    await queryInterface.bulkInsert('Users', users)
   },
 
   down: async (queryInterface, Sequelize) => {

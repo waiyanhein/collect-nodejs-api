@@ -6,18 +6,13 @@ let app = null;
 const each = require('jest-each').default;
 const faker = require('faker');
 
-let requestBody = null;
-
-const generateRequestBody = () => {
-  // email: faker.internet.email(),
-  // password: faker.internet.password()
-  return {
-    email: faker.internet.email(),
-    password: faker.internet.password()
-  }
-}
+let requestBody = {
+  email: testHelper.testUser.email,
+  password: testHelper.testUser.password
+};
 
 beforeEach(async () => {
+
   let data = await testHelper.beforeEachTest();
   app = testHelper.getApp();
 })
@@ -27,15 +22,14 @@ afterEach(async () => {
 })
 
 describe("Login Test", () => {
-  it ("user can log in", () => {
+  it ("user can log in", async () => {
+    const res = await request(app).post("/api/auth/login").send(requestBody);
 
+    expect(res.statusCode).toBe(200);
+    // check the response
   })
 
   it ("login fails when the email and password are incorrect", () => {
-
-  })
-
-  it ("returns the expected json data when login is successful", () => {
 
   })
 
