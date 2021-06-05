@@ -39,6 +39,10 @@ $ npm install --save tedious # Microsoft SQL Server
 - Run migrations -> `npx sequelize-cli db:migrate`
 - Undo migrations -> `npx sequelize-cli db:migrate:undo`
 - Undo all migrations -> `npx sequelize-cli db:migrate:undo:all`
+- Creating the seed -> `npx sequelize-cli seed:generate --name demo-user`
+- Running all seeds -> `npx sequelize-cli db:seed:all`
+- Undoing the seeds -> `npx sequelize-cli db:seed:undo`
+- Undoing all the seeds -> `npx sequelize-cli db:seed:undo:all`
 
 ### Running the application locally
 - npm install

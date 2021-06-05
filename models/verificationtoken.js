@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      VerificationToken.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
+      VerificationToken.belongsTo(models.User, { foreignKey: 'userId', as: 'user', onDelete: 'cascade' });
     }
   };
   VerificationToken.init({

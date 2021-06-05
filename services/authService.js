@@ -9,6 +9,7 @@ let validators = require('../utilities/validators.js');
 let userService = require('./userService.js');
 let VerificationToken = models.VerificationToken;
 
+// TODO: update the verifiedAt column on the user table.
 const createVerificationToken = async (data) => {
   try {
     let token = await VerificationToken.create({

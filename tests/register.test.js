@@ -18,7 +18,6 @@ const registerRequestBody = () => {
   };
 }
 
-//TODO: find a way to create a base test class.
 beforeEach(async () => {
   let data = await testHelper.beforeEachTest();
   app = testHelper.getApp();
