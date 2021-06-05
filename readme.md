@@ -12,6 +12,7 @@
 - npm install --save express-validator
 - npm install cors --save
 - npm install --save-dev jest supertest (for testing)
+- npm install --save-dev jest-each // Data provider for jest test -> https://www.npmjs.com/package/jest-each
 - Authentication packages
 - npm install jsonwebtoken --save
 - npm install bcryptjs --save

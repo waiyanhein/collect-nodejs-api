@@ -4,6 +4,8 @@ const authService = require('../services/authService.js');
 const mailService = require('../services/mailService.js');
 const userService = require('../services/userService.js');
 
+//TODO: unset the password field from the response
+//TODO: find a solution like Laravel resource.
 const register = async (req, res) => {
   const validationResult = validators.validate(req);
   if (validationResult.error) {

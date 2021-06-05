@@ -26,6 +26,7 @@
   "devDependencies": {
     "faker": "^5.5.3",
     "jest": "^27.0.3",
+    "jest-each": "^27.0.2",
     "nodemailer-mock": "^1.5.9",
     "sequelize-cli": "^6.2.0",
     "supertest": "^6.1.3"
