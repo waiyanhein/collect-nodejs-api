@@ -34,10 +34,10 @@ const login = async (req, res) => {
 
   let result = await authService.login(req.body);
   if (result.error) {
-    res.status(result.code).json(result);
+    return res.status(result.code).json(result);
   }
 
-  res.status(200).json(result);
+  return res.status(200).json(result);
 }
 
 const me = (req, res) => {

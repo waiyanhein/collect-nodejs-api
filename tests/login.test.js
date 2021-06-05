@@ -34,8 +34,14 @@ describe("Login Test", () => {
     expect(res.body.data.hasOwnProperty('token')).toBe(true);
   })
 
-  it ("login fails when the email and password are incorrect", () => {
+  it ("login fails when the email and password are incorrect", async () => {
+    let body = { ...requestBody };
+    body.password = "invalidpassword";
 
+    const res = await request(app).post("/api/auth/login").send(body);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe('Account details are incorrect.')
   })
 
   //TODO: test the me endpoint here.
@@ -44,13 +50,44 @@ describe("Login Test", () => {
   each([
     {
       body: {
-
+        email: "",
+        password: requestBody.password
       },
-      fieldName: "",
-      expectedError: "",
+      fieldName: "email",
+      expectedError: "Email is required.",
+      before: null
+    },
+    {
+      body: {
+        email: "invalidemailformat",
+        password: requestBody.password
+      },
+      fieldName: "email",
+      expectedError: "Email format is not valid.",
+      before: null
+    },
+    {
+      body: {
+        email: requestBody.email,
+        password: ""
+      },
+      fieldName: "password",
+      expectedError: "Password is required.",
       before: null
     }
   ]).test("login - validation fails when the fields are not valid", async ({ body, fieldName, expectedError, before }) => {
+    if (before != null) {
+      if (before.constructor.name === "AsyncFunction") {
+        await before();
+      } else {
+        before();
+      }
+    }
 
+    const res = await request(app).post("/api/auth/login").send(body);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe(true);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, fieldName, expectedError)).toBe(true);
   })
 })
