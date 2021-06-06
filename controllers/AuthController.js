@@ -117,6 +117,8 @@ const resetPassword = async (req, res) => {
     return res.status(resetPasswordResult.code).json(resetPasswordResult);
   }
 
+  //TODO: here expire the token
+
   return res.status(200).json({ error: false });
 }
 

@@ -287,6 +287,7 @@ const resetPassword = async ({ email, newPassword }) => {
   }
 
   let updateUserResult = await userService.update({
+    id: userResult.data.id,
     password: hashPassword(newPassword)
   });
 

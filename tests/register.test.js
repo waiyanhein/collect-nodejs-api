@@ -82,6 +82,57 @@ describe("Register Test", () => {
     expect(sentEmails[0].to).toBe(body.email);
   })
 
+  it("can resend confirm registration email", async () => {
+    let body = {
+      email: testHelper.testUser.email
+    }
+
+    const res = await request(app).post('/api/auth/resend-confirm-registration-email')
+    .send(body);
+
+    expect(res.statusCode).toBe(200);
+    const sentEmails = mailMock.getSentMail();
+    // there should be one
+    expect(sentEmails.length).toBe(1);
+    expect(sentEmails[0].to).toBe(body.email);
+  })
+
+  it ("send confirm registration email - validation fails when email is empty", async () => {
+    let body = {
+      email: ""
+    }
+
+    const res = await request(app).post('/api/auth/resend-confirm-registration-email')
+    .send(body);
+
+    expect(res.statusCode).toBe(400);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, "email", "Email is required.")).toBe(true);
+  })
+
+  it ("send confirm registration email - validation fails when email format is invalid", async () => {
+    let body = {
+      email: "invalidemailformat"
+    }
+
+    const res = await request(app).post('/api/auth/resend-confirm-registration-email')
+    .send(body);
+
+    expect(res.statusCode).toBe(400);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, "email", "Email format is not valid.")).toBe(true);
+  })
+
+  it ("send confirm registration email - validation fails when account with email does not exist", async () => {
+    let body = {
+      email: "idonotexist@gmail.com"
+    }
+
+    const res = await request(app).post('/api/auth/resend-confirm-registration-email')
+    .send(body);
+
+    expect(res.statusCode).toBe(400);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, "email", "User account with the email does not exist.")).toBe(true);
+  })
+
   const requestBody = registerRequestBody();
 
   each([
