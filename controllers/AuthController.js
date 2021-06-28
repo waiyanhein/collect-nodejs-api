@@ -117,7 +117,20 @@ const resetPassword = async (req, res) => {
     return res.status(resetPasswordResult.code).json(resetPasswordResult);
   }
 
-  //TODO: here expire the token
+  let tokenValidationResult = await authService.validateVerificationToken({
+    email: req.body.email,
+    token: req.body.token
+  })
+
+  // expires the token
+  if (tokenValidationResult.error) {
+    return res.status(tokenValidationResult.code).json(tokenValidationResult);
+  }
+  let verifyResult = await authService.markVerificationTokenAsVerified(tokenValidationResult.data);
+
+  if (verifyResult.error) {
+    return res.status(verify.code).json(verifyResult);
+  }
 
   return res.status(200).json({ error: false });
 }

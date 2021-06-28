@@ -100,5 +100,45 @@ describe("Auth Related Test", () => {
     expect(valid).toBe(true);
   })
 
+  it ("expires the verification token after the passsword has been reset", async () => {
+    let testUser = await User.findOne({
+      where: {
+        email: {
+          [Op.eq]: testHelper.testUser.email
+        }
+      }
+    })
+
+    let now = new Date();
+    //genrate the token in the database before making the request.
+    let verificationToken = await VerificationToken.create({
+      userId: testUser.id,
+      verificationToken: "testing",
+      expiresAt: date.addSeconds(now, 40000)
+    })
+
+    let requestBody = {
+      email: testUser.email,
+      password: "Newpassword123",
+      confirm_password: "Newpassword123",
+      token: "testing"
+    }
+    const res = await request(app).put("/api/auth/reset-password").send(requestBody);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.error).toBe(false);
+
+    // check if the token is expired.
+    verificationToken = await VerificationToken.findOne({
+      where: {
+        id: {
+          [Op.eq]: verificationToken.id
+        }
+      }
+    })
+
+    expect((verificationToken.verifiedAt != null && verificationToken.verifiedAt != "" && verificationToken.verifiedAt != undefined)).toBe(true);
+  })
+
   // TODO: validation rules for reset password
 })
