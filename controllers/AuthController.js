@@ -184,11 +184,52 @@ const resendConfirmRegistrationEmail = async (req, res) => {
   })
 }
 
+// TODO: write test for this.
+const verifyUserAccount = async (req, res) => {
+  const validationResult = validators.validate(req);
+  if (validationResult.error) {
+    return res.status(400).json(validationResult);
+  }
+
+  let validateResult = await authService.validateVerificationToken({
+    email: req.body.email,
+    token: req.body.token
+  });
+
+  if (validateResult.error) {
+    return res.status(validateResult.code).json(validateResult);
+  } else {
+    let tokenUpdateResult = await authService.markVerificationTokenAsVerified(validateResult.data);
+    if (tokenUpdateResult.error) {
+      return res.status(tokenUpdateResult.error).json(tokenUpdateResult);
+    } else {
+      // mark the user account as verified
+      let userResult = await userService.findUserByEmail(req.body.email);
+      if (userResult.error) {
+        return res.status(userResult.error).json(userResult);
+      } else {
+        // mark as verified.
+        let updateUserResult = await userService.update({
+          id: userResult.data.id,
+          verifiedAt: new Date()
+        })
+
+        if (updateUserResult.error) {
+          return res.status(updateUserResult.code).json(updateUserResult);
+        } else {
+          return res.status(200).json(validateResult);
+        }
+      }
+    }
+  }
+}
+
 exports.register = register;
 exports.login = login;
 exports.me = me;
-exports.verifyVerificationToken =  verifyVerificationToken;
-exports.validateVerificationToken = validateVerificationToken;
+exports.verifyVerificationToken =  verifyVerificationToken; //todo: remove this endpoint
+exports.validateVerificationToken = validateVerificationToken; //todo: remove this endpoint
+exports.verifyUserAccount = verifyUserAccount;
 exports.resendConfirmRegistrationEmail = resendConfirmRegistrationEmail;
 exports.sendResetPasswordEmail = sendResetPasswordEmail;
 exports.resetPassword = resetPassword;

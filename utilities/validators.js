@@ -68,7 +68,7 @@ const auth = {
   verifyVerificationToken: [
     body('email').not().isEmpty().withMessage("Email is required."),
     body('email').isEmail().withMessage('Email format is not valid.'),
-    body("token").not().isEmpty().withMessage("Token is required"),
+    body("token").not().isEmpty().withMessage("Token is required."),
   ],
   resendConfirmRegistrationEmail: [
     body('email').not().isEmpty().withMessage("Email is required."),

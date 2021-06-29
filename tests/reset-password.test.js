@@ -140,5 +140,48 @@ describe("Auth Related Test", () => {
     expect((verificationToken.verifiedAt != null && verificationToken.verifiedAt != "" && verificationToken.verifiedAt != undefined)).toBe(true);
   })
 
+  //todo: can verify the reset password token
+  it ('password reset fails when the verification token does not match the email', async () => {
+
+  })
+
+  it ('password reset fails when the email does not match the verification token', async () => {
+
+  })
+
+  it ('password reset fails when the verification token is expired', async () => {
+
+  })
+
+  it ('password reset fails when the verification token is already used', async () => {
+
+  })
+
   // TODO: validation rules for reset password
+  // validation fails when the email is isEmpty
+  // validation fails when the email format is invalid
+  // validation fails when the email does not exist.
+  // validation fails when the token is empty
+  // validation fails when the password is empty
+  // validation fails when confirm password is empty
+  // validation fails when token is not valid
+  // validation fails when the token is expires
+  // each([
+  //   {
+  //     body: {
+  //       email: "",
+  //       password: requestBody.password
+  //     },
+  //     fieldName: "email",
+  //     expectedError: "Email is required.",
+  //     before: null
+  //   }
+  // ]).test("reset password - validation fails when the field value is not valid", async ({
+  //   body,
+  //   fieldName,
+  //   expectedError,
+  //   before
+  // }) => {
+  //
+  // })
 })

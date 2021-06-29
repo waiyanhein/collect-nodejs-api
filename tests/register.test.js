@@ -5,10 +5,12 @@ let app = null;
 // boilerplate ends here
 const each = require('jest-each').default;
 const faker = require('faker');
+const date = require('date-and-time');
 const models = require('../models');
 const { Op } = require("sequelize");
 const mailMock = require('nodemailer').mock;
 let User = models.User;
+let VerificationToken = models.VerificationToken;
 
 const registerRequestBody = () => {
   return {
@@ -204,5 +206,188 @@ describe("Register Test", () => {
     expect(res.statusCode).toBe(400);
     expect(res.body.error).toBe(true);
     expect(testHelper.hasValidationErrorMessage(res.body.errors, fieldName, expectedError)).toBe(true);
+  })
+
+  it ('user can verify account email', async () => {
+    const requestBody = {
+      email: faker.internet.email(),
+      token: "testing"
+    }
+
+    let user = await User.create({
+      name: faker.name.findName(),
+      email: requestBody.email,
+      password: faker.internet.password(),
+      verifiedAt: null
+    })
+
+    let now = new Date();
+    let expiresAt = date.addSeconds(now, 3000);
+    let verificationToken = await VerificationToken.create({
+      userId: user.id,
+      expiresAt: expiresAt,
+      verificationToken: "testing",
+      verifiedAt: null
+    })
+
+    const res = await request(app).post('/api/auth/verify-account-email').send(requestBody);
+
+    user = await User.findOne({
+      where: {
+        id: {
+          [Op.eq]: user.id
+        }
+      }
+    })
+    verificationToken = await VerificationToken.findOne({
+      where: {
+        id: {
+          [Op.eq]: verificationToken.id
+        }
+      }
+    })
+
+    expect(res.statusCode).toBe(200);
+    expect(user.verifiedAt!=null && user.verifiedAt!=undefined).toBe(true);
+    expect(verificationToken.verifiedAt != null && verificationToken.verifiedAt != undefined).toBe(true);
+  })
+
+  it ('verifying account email fails when the email is empty', async () => {
+    let requestBody = {
+      email: "",
+      token: "testing"
+    }
+
+    const res = await request(app).post('/api/auth/verify-account-email').send(requestBody);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe(true);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, "email", "Email is required.")).toBe(true);
+  })
+
+  it ('verifying account email fails when the email format is not valid', async () => {
+    let requestBody = {
+      email: "invalidemailformat",
+      token: "testing"
+    }
+
+    const res = await request(app).post('/api/auth/verify-account-email').send(requestBody);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe(true);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, "email", "Email format is not valid.")).toBe(true);
+  })
+
+  it ('verifying account email fails when the email does not match the token', async () => {
+    let user = await User.create({
+      name: faker.name.findName(),
+      email: faker.internet.email(),
+      password: faker.internet.password()
+    })
+
+    let now = new Date();
+    let expiresAt = date.addSeconds(now, 3000);
+    let verificationToken = await VerificationToken.create({
+      userId: user.id,
+      expiresAt: expiresAt,
+      verificationToken: "testing",
+      verifiedAt: null
+    })
+
+    let requestBody = {
+      email: faker.internet.email(),
+      token: verificationToken.verificationToken
+    }
+
+    const res = await request(app).post('/api/auth/verify-account-email').send(requestBody);
+
+    expect(res.body.error).toBe(true);
+    expect(res.body.message).toBe('Invalid account.');
+  })
+
+  it ('verifying account email fails when the token is empty', async () => {
+    let requestBody = {
+      email: faker.internet.email(),
+      token: ""
+    }
+
+    const res = await request(app).post('/api/auth/verify-account-email').send(requestBody);
+
+    expect(res.body.error).toBe(true);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, "token", "Token is required.")).toBe(true);
+  })
+
+  it ('verifying account email fails when the token is not valid', async () => {
+    let requestBody = {
+      email: faker.internet.email(),
+      token: "testing"
+    }
+
+    let user = User.create({
+      name: faker.name.findName(),
+      email: requestBody.email,
+      password: faker.internet.password()
+    })
+
+    const res = await request(app).post('/api/auth/verify-account-email').send(requestBody);
+
+    expect(res.body.error).toBe(true);
+    expect(res.body.message).toBe('Invalid token.');
+  })
+
+  it ('verifying account email fails when the token is expired', async () => {
+    const requestBody = {
+      email: faker.internet.email(),
+      token: "testing"
+    }
+
+    let user = await User.create({
+      name: faker.name.findName(),
+      email: requestBody.email,
+      password: faker.internet.password(),
+      verifiedAt: null
+    })
+
+    let now = new Date();
+    let expiresAt = date.addSeconds(now, -3000);
+    let verificationToken = await VerificationToken.create({
+      userId: user.id,
+      expiresAt: expiresAt,
+      verificationToken: "testing",
+      verifiedAt: null
+    })
+
+    const res = await request(app).post('/api/auth/verify-account-email').send(requestBody);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Token been expired.");
+  })
+
+  it ('verifying account email fails when the token is already verified', async () => {
+    const requestBody = {
+      email: faker.internet.email(),
+      token: "testing"
+    }
+
+    let user = await User.create({
+      name: faker.name.findName(),
+      email: requestBody.email,
+      password: faker.internet.password(),
+      verifiedAt: null
+    })
+
+    let now = new Date();
+    let expiresAt = date.addSeconds(now, 3000);
+    let verificationToken = await VerificationToken.create({
+      userId: user.id,
+      expiresAt: expiresAt,
+      verificationToken: "testing",
+      verifiedAt: now
+    })
+
+    const res = await request(app).post('/api/auth/verify-account-email').send(requestBody);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.message).toBe("Token has already been used");
   })
 })
