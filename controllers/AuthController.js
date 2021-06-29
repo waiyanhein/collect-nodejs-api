@@ -227,8 +227,8 @@ const verifyUserAccount = async (req, res) => {
 exports.register = register;
 exports.login = login;
 exports.me = me;
-exports.verifyVerificationToken =  verifyVerificationToken; //todo: remove this endpoint
-exports.validateVerificationToken = validateVerificationToken; //todo: remove this endpoint
+exports.verifyVerificationToken =  verifyVerificationToken;
+exports.validateVerificationToken = validateVerificationToken;
 exports.verifyUserAccount = verifyUserAccount;
 exports.resendConfirmRegistrationEmail = resendConfirmRegistrationEmail;
 exports.sendResetPasswordEmail = sendResetPasswordEmail;

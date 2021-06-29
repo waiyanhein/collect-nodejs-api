@@ -140,21 +140,122 @@ describe("Auth Related Test", () => {
     expect((verificationToken.verifiedAt != null && verificationToken.verifiedAt != "" && verificationToken.verifiedAt != undefined)).toBe(true);
   })
 
-  //todo: can verify the reset password token
+  // email in the request is not valid basically.
   it ('password reset fails when the verification token does not match the email', async () => {
+    let requestBody = {
+      email: faker.internet.email(),
+      token: "testing",
+      password: "Newpassword123",
+      confirm_password: "Newpassword123"
+    }
 
+    let user = await User.create({
+      name: faker.name.findName(),
+      email: faker.internet.email(), // another email different from the one in the request
+      password: faker.internet.password()
+    })
+
+    let now = new Date();
+    let expiresAt = date.addSeconds(now, 3000);
+    let verificationToken = await VerificationToken.create({
+      userId: user.id,
+      expiresAt: expiresAt,
+      verificationToken: requestBody.token,
+      verifiedAt: null
+    })
+
+    const res = await request(app).put("/api/auth/reset-password").send(requestBody);
+
+    expect(res.body.error).toBe(true);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, "token", "Invalid token.")).toBe(true);
   })
 
+  // token in the request is not valid basically
   it ('password reset fails when the email does not match the verification token', async () => {
+    let requestBody = {
+      email: faker.internet.email(),
+      token: "testing123",
+      password: "Newpassword123",
+      confirm_password: "Newpassword123"
+    }
 
+    let user = await User.create({
+      name: faker.name.findName(),
+      email: requestBody.email,
+      password: faker.internet.password()
+    })
+
+    let now = new Date();
+    let expiresAt = date.addSeconds(now, 3000);
+    let verificationToken = await VerificationToken.create({
+      userId: user.id,
+      expiresAt: expiresAt,
+      verificationToken: "anothertoken",
+      verifiedAt: null
+    })
+
+    const res = await request(app).put("/api/auth/reset-password").send(requestBody);
+
+    expect(res.body.error).toBe(true);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, "token", "Invalid token.")).toBe(true);
   })
 
   it ('password reset fails when the verification token is expired', async () => {
+    let requestBody = {
+      email: faker.internet.email(),
+      token: "testing",
+      password: "Newpassword123",
+      confirm_password: "Newpassword123"
+    }
 
+    let user = await User.create({
+      name: faker.name.findName(),
+      email: requestBody.email,
+      password: faker.internet.password()
+    })
+
+    let now = new Date();
+    let expiresAt = date.addSeconds(now, -3000);
+    let verificationToken = await VerificationToken.create({
+      userId: user.id,
+      expiresAt: expiresAt,
+      verificationToken: requestBody.token,
+      verifiedAt: null
+    })
+
+    const res = await request(app).put("/api/auth/reset-password").send(requestBody);
+
+    expect(res.body.error).toBe(true);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, "token", "Invalid token.")).toBe(true);
   })
 
   it ('password reset fails when the verification token is already used', async () => {
+    let requestBody = {
+      email: faker.internet.email(),
+      token: "testing",
+      password: "Newpassword123",
+      confirm_password: "Newpassword123"
+    }
 
+    let user = await User.create({
+      name: faker.name.findName(),
+      email: requestBody.email,
+      password: faker.internet.password()
+    })
+
+    let now = new Date();
+    let expiresAt = date.addSeconds(now, 3000);
+    let verificationToken = await VerificationToken.create({
+      userId: user.id,
+      expiresAt: expiresAt,
+      verificationToken: requestBody.token,
+      verifiedAt: now
+    })
+
+    const res = await request(app).put("/api/auth/reset-password").send(requestBody);
+
+    expect(res.body.error).toBe(true);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, "token", "Invalid token.")).toBe(true);
   })
 
   // TODO: validation rules for reset password
