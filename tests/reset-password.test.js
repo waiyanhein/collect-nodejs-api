@@ -259,7 +259,40 @@ describe("Auth Related Test", () => {
   })
 
   it ('reset password validation fails when the old password is provided', async () => {
+    let plainPassword = "Password.123456"
+    let hashPassword = authService.hashPassword(plainPassword);
 
+    let testUser = await User.findOne({
+      where: {
+        email: {
+          [Op.eq]: testHelper.testUser.email
+        }
+      }
+    })
+    //update the password
+    await testUser.update({
+      password: hashPassword
+    });
+
+    let now = new Date();
+    //genrate the token in the database before making the request.
+    let verificationToken = await VerificationToken.create({
+      userId: testUser.id,
+      verificationToken: "testing",
+      expiresAt: date.addSeconds(now, 40000)
+    })
+
+    let requestBody = {
+      email: testUser.email,
+      password: plainPassword,
+      confirm_password: plainPassword,
+      token: verificationToken.verificationToken
+    }
+    const res = await request(app).put("/api/auth/reset-password").send(requestBody);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe(true);
+    expect(testHelper.hasValidationErrorMessage(res.body.errors, "password", "You have provided the old password")).toBe(true);
   })
 
   each([
