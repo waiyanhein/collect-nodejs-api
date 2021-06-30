@@ -184,7 +184,6 @@ const resendConfirmRegistrationEmail = async (req, res) => {
   })
 }
 
-// TODO: write test for this.
 const verifyUserAccount = async (req, res) => {
   const validationResult = validators.validate(req);
   if (validationResult.error) {

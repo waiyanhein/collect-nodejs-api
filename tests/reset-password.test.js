@@ -258,31 +258,101 @@ describe("Auth Related Test", () => {
     expect(testHelper.hasValidationErrorMessage(res.body.errors, "token", "Invalid token.")).toBe(true);
   })
 
-  // TODO: validation rules for reset password
-  // validation fails when the email is isEmpty
-  // validation fails when the email format is invalid
-  // validation fails when the email does not exist.
-  // validation fails when the token is empty
-  // validation fails when the password is empty
-  // validation fails when confirm password is empty
-  // validation fails when token is not valid
-  // validation fails when the token is expires
-  // each([
-  //   {
-  //     body: {
-  //       email: "",
-  //       password: requestBody.password
-  //     },
-  //     fieldName: "email",
-  //     expectedError: "Email is required.",
-  //     before: null
-  //   }
-  // ]).test("reset password - validation fails when the field value is not valid", async ({
-  //   body,
-  //   fieldName,
-  //   expectedError,
-  //   before
-  // }) => {
-  //
-  // })
+  it ('reset password validation fails when the old password is provided', async () => {
+
+  })
+
+  each([
+    //validation fails when the email is isEmpty
+    {
+      body: {
+        email: '',
+        token: "testing",
+        password: "Newpassword123",
+        confirm_password: "Newpassword123"
+      },
+      fieldName: "email",
+      expectedError: "Email is required.",
+      before: null
+    },
+    //validation fails when the email format is invalid
+    {
+      body: {
+        email: 'invalidemailformat',
+        token: "testing",
+        password: "Newpassword123",
+        confirm_password: "Newpassword123"
+      },
+      fieldName: "email",
+      expectedError: "Email format is not valid.",
+      before: null
+    },
+    //validation fails when the email does not exist.
+    {
+      body: {
+        email: faker.internet.email(),
+        token: "testing",
+        password: "Newpassword123",
+        confirm_password: "Newpassword123"
+      },
+      fieldName: "email",
+      expectedError: "User account with the email does not exist.",
+      before: null
+    },
+    //validation fails when the token is empty
+    {
+      body: {
+        email: faker.internet.email(),
+        token: "",
+        password: "Newpassword123",
+        confirm_password: "Newpassword123"
+      },
+      fieldName: "token",
+      expectedError: "Token is required.",
+      before: null
+    },
+    //validation fails when the password is empty
+    {
+      body: {
+        email: faker.internet.email(),
+        token: "testing",
+        password: "",
+        confirm_password: "Newpassword123"
+      },
+      fieldName: "password",
+      expectedError: "New password is required.",
+      before: null
+    },
+    // validation fails when confirm password is empty
+    {
+      body: {
+        email: faker.internet.email(),
+        token: "testing",
+        password: "Newpassword123",
+        confirm_password: ""
+      },
+      fieldName: "confirm_password",
+      expectedError: "Please confirm the password.",
+      before: null
+    },
+  ]).test("reset password - validation fails when the field value is not valid", async ({
+    body,
+    fieldName,
+    expectedError,
+    before
+  }) => {
+      if (before != null) {
+        if (before.constructor.name === "AsyncFunction") {
+          await before();
+        }   else {
+          before();
+        }
+      }
+
+      const res = await request(app).put("/api/auth/reset-password").send(body);
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe(true);
+      expect(testHelper.hasValidationErrorMessage(res.body.errors, fieldName, expectedError)).toBe(true);
+  })
 })

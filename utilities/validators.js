@@ -102,6 +102,7 @@ const auth = {
         }
       })
     }),
+    body("token").not().isEmpty().withMessage("Token is required."),
     body("token").custom((value, { req }) => {
       return isVerificationTokenValid({
         email: req.body.email,
