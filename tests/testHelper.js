@@ -1,6 +1,7 @@
 require('dotenv').config();
 const request = require('supertest');
 let database = require('../utilities/database.js');
+const { Umzug, SequelizeStorage } = require('umzug');
 let app = null;
 let server = null;
 // import related to seeders
@@ -39,6 +40,14 @@ const getApp = () => {
 
   return app;
 }
+
+//TODO: this is not working.
+const umzug = new Umzug({
+  migrations: { glob: 'migrations/*.js' },
+  context: database.sequelize.getQueryInterface(),
+  storage: new SequelizeStorage({ sequelize: database.sequelize }),
+  logger: console,
+});
 
 const beforeEachTest = async () => {
   await seedData();
