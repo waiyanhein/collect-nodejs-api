@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Region extends Model {
+  class ExchangeRequest extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,21 +11,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Region.belongsToMany(models.ExchangeRequest, {
+      ExchangeRequest.belongsToMany(models.Region, {
         through: 'RegionExchangeRequests',
-        as: 'exchangeRequests',
-        foreignKey: "region_id",
-        otherKey: "exchange_request_id"
+        as: 'regions',
+        foreignKey: 'exchange_request_id',
+        otherKey: "region_id"
       })
     }
   };
-  Region.init({
-    name: DataTypes.STRING,
-    latitude: DataTypes.FLOAT,
-    longitude: DataTypes.FLOAT
+  ExchangeRequest.init({
+    id: DataTypes.INTEGER,
+    exchange_rate: DataTypes.DECIMAL,
+    currency: DataTypes.STRING,
+    amount: DataTypes.DECIMAL
   }, {
     sequelize,
-    modelName: 'Region',
+    modelName: 'ExchangeRequest',
   });
-  return Region;
+  return ExchangeRequest;
 };

@@ -90,3 +90,8 @@ postgres://postgres:root@localhost:5432/collect
   }
 }
 ```
+
+m-to-m relationship -> https://medium.com/@tonyangelo9707/many-to-many-associations-using-sequelize-941f0b6ac102
+
+### Sequelize data types
+- migrations: uuid, integer, date, decimal, string
