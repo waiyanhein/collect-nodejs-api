@@ -19,7 +19,7 @@ const extractAccessToken = (req) => {
   return segments[1];
 }
 
-const authenticate = () => {
+const authenticate = (req, res, next) => {
   let accessToken = extractAccessToken(req);
 
   if (! accessToken) {
