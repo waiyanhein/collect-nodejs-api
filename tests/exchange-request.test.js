@@ -3,6 +3,7 @@ const request = require('supertest');
 const testHelper = require('./testHelper.js');
 let app = null;
 // boilerplate ends here
+const faker = require('faker');
 const models = require('../models');
 const { Op } = require("sequelize");
 let Region = models.Region;
@@ -32,9 +33,27 @@ describe("ExchangeRequest Test", () => {
         longitude: 2
       }
     ])
-
+    let regionIds = [ ];
+    for (let i=0; i< regions.length; i++) {
+      regionIds.push(regions[i].id);
+    }
+    // exchange_rate,
+    // currency,
+    // amount,
+    // buy_or_sell,
+    // note,
+    // email,
+    // phone,
+    // address,
     let body = {
-
+      region_ids: regionIds,
+      exchange_rate: 1400,
+      currency: "GBD",
+      amount: 500,
+      buy_or_sell: 1,
+      note: faker.lorem.sentence(),
+      email: faker.internet.email(),
+      phone: '07412287904'
     }
     const res = await request(app).post("/api/exchange-request").send(body)
   })

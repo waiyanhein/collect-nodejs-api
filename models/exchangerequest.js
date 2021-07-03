@@ -17,6 +17,8 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'exchange_request_id',
         otherKey: "region_id"
       })
+
+      ExchangeRequest.belongsTo(models.User, { foreignKey: 'userId', as: 'user', onDelete: 'cascade' });
     }
   };
   ExchangeRequest.init({
@@ -27,7 +29,8 @@ module.exports = (sequelize, DataTypes) => {
     note: DataTypes.STRING,
     email: DataTypes.STRING,
     phone: DataTypes.STRING,
-    address: DataTypes.STRING
+    address: DataTypes.STRING,
+    userId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'ExchangeRequest',

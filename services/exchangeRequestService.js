@@ -13,7 +13,8 @@ const create = async ({
   email,
   phone,
   address,
-  region_ids
+  region_ids,
+  userId
 }) => {
   try {
     let exchangeRequest = await ExchangeRequest.create({
@@ -24,17 +25,20 @@ const create = async ({
       note,
       email,
       phone,
-      address
+      address,
+      userId
     });
 
-    let pivotData = [ ];
-    region_ids.forEach(regionId => {
-        pivotData.push({
-          exchange_request_id: exchangeRequest.id,
-          region_id: regionId
-        })
-    })
-    let regionExchangeRequests = await RegionExchangeRequest.bulkCreate(pivotData);
+    if (region_ids && region_ids.length > 0) {
+      let pivotData = [ ];
+      region_ids.forEach(regionId => {
+          pivotData.push({
+            exchange_request_id: exchangeRequest.id,
+            region_id: regionId
+          })
+      })
+      let regionExchangeRequests = await RegionExchangeRequest.bulkCreate(pivotData);
+    }
 
     return {
       error: false,
