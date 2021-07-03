@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   RegionExchangeRequest.init({
-    id: DataTypes.INTEGER,
     region_id: DataTypes.INTEGER,
     exchange_request_id: DataTypes.INTEGER
   }, {

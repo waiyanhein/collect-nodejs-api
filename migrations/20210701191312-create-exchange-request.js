@@ -8,9 +8,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      id: {
-        type: Sequelize.INTEGER
-      },
       exchange_rate: {
         type: Sequelize.DECIMAL
       },
@@ -19,6 +16,21 @@ module.exports = {
       },
       amount: {
         type: Sequelize.DECIMAL
+      },
+      buy_or_sell: {
+        type: Sequelize.INTEGER
+      },
+      note: {
+        type: Sequelize.STRING
+      },
+      email: {
+        type: Sequelize.STRING
+      },
+      phone: {
+        type: Sequelize.STRING
+      },
+      address: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

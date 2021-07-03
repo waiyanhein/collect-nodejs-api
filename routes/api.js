@@ -4,6 +4,7 @@ const validators = require('../utilities/validators.js');
 // importing the controllers
 const authController = require('../controllers/authController.js');
 const regionController = require('../controllers/regionController.js');
+const exchangeRequestController = require('../controllers/exchangeRequestController.js');
 // end importing the controllers
 
 router.post('/auth/register', validators.auth.register, authController.register);
@@ -18,5 +19,7 @@ router.post('/auth/send-resetpassword-link', validators.auth.sendResetPasswordEm
 router.put('/auth/reset-password', validators.auth.resetPassword, authController.resetPassword);
 
 router.get('/regions', regionController.get);
+
+router.post('/exchange-request', validators.exchangeRequest.create, exchangeRequestController.create);
 
 module.exports = router;

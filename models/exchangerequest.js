@@ -20,10 +20,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   ExchangeRequest.init({
-    id: DataTypes.INTEGER,
     exchange_rate: DataTypes.DECIMAL,
     currency: DataTypes.STRING,
-    amount: DataTypes.DECIMAL
+    amount: DataTypes.DECIMAL,
+    buy_or_sell: DataTypes.INTEGER,
+    note: DataTypes.STRING,
+    email: DataTypes.STRING,
+    phone: DataTypes.STRING,
+    address: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'ExchangeRequest',

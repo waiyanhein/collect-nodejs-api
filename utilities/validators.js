@@ -135,7 +135,22 @@ const auth = {
   ]
 }
 
+const exchangeRequest = {
+  create: [
+    body('exchange_rate').not().isEmpty().withMessage("Exchagne rate is required."),
+    body('currency').not().isEmpty().withMessage("Currency is required."),
+    body('amount').not().isEmpty().withMessage('Amount is required.'),
+    body('buy_or_sell').not().isEmpty().withMessage("Please specify if you are buying or selling."),
+    body('note').not().isEmpty().withMessage("Note is required."),
+    body('email').not().isEmpty().withMessage("Email is required."),
+    body('phone').not().isEmpty().withMessage("Phone is required."),
+    body('address').not().isEmpty().withMessage("Address is required."),
+    body('region_ids').not().isEmpty().withMessage("Please select regions.")
+  ]
+}
+
 exports.auth = auth;
+exports.exchangeRequest = exchangeRequest;
 exports.validate = (req) => {
   const errors = validationResult(req);
 
