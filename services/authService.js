@@ -45,7 +45,7 @@ const checkPassword = async (plainText, hash) => {
   return valid;
 }
 
-register = async ({ name, email, password }) => {
+const register = async ({ name, email, password }) => {
   try {
     let userResult = await userService.create({ name: name, email: email, password:hashPassword(password)  })
 
@@ -66,7 +66,7 @@ register = async ({ name, email, password }) => {
   }
 }
 
-login = async ({ email, password }) => {
+const login = async ({ email, password }) => {
   try {
     let userResult = await userService.findUserByEmail(email);
     let user = userResult.data;
@@ -111,7 +111,31 @@ login = async ({ email, password }) => {
   }
 }
 
-me = async (token) => {
+const validateAccessToken = async (token) => {
+  return new Promise(function(resolve, reject) {
+    try {
+      jwt.verify(token, config.auth.jwtSecret, (err, decoded) => {
+        if (err) {
+          resolve({ error: true, code: 400, message: "Invalid token." })
+          return
+        }
+
+        resolve({
+          error: false,
+          data: decoded
+        })
+      })
+    } catch (e) {
+      reject({
+        error: true,
+        code: 500,
+        message: e.message
+      })
+    }
+  });
+}
+
+const me = async (token) => {
   return new Promise(function(resolve, reject) {
     if (! token) {
       // token not passed
@@ -123,21 +147,15 @@ me = async (token) => {
       return;
     }
 
-    jwt.verify(token, config.auth.jwtSecret, (err, decoded) => {
-      if (err) {
-        resolve({ error: true, code: 400, message: "Invalid token." })
-        return
-      }
-
-      resolve({
-        error: false,
-        data: decoded
-      })
+    validateAccessToken(token).then(result => {
+        resolve(result);
+    }).catch(error => {
+        reject(error);
     })
   });
 }
 
-generateResetPasswordLink = async (user) => {
+const generateResetPasswordLink = async (user) => {
   let verificationToken = generateVerificationToken();
   let now = new Date();
   let expiresAt = date.addSeconds(now, config.auth.passwordResetLinkLifespan);
@@ -162,7 +180,7 @@ generateResetPasswordLink = async (user) => {
   }
 }
 
-generateAccountVerificationLink = async (user) => {
+const generateAccountVerificationLink = async (user) => {
   let verificationToken = generateVerificationToken();
   let now = new Date();
   let expiresAt = date.addSeconds(now, config.auth.accountVerificationLinkLifespan);
@@ -310,3 +328,4 @@ exports.markVerificationTokenAsVerified = markVerificationTokenAsVerified;
 exports.resetPassword = resetPassword;
 exports.hashPassword = hashPassword;
 exports.checkPassword = checkPassword;
+exports.validateAccessToken = validateAccessToken;
