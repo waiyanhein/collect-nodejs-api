@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "all-tests": "npm run test login.test.js && npm run test register.test.js && npm run test reset-password.test.js"
   },
   "author": "",
   "license": "ISC",
