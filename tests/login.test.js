@@ -6,20 +6,24 @@ let app = null;
 const each = require('jest-each').default;
 const faker = require('faker');
 
-let requestBody = {
-  email: testHelper.testUser.email,
-  password: testHelper.testUser.password
-};
+let testGlobalData = {
+  port_id: 3000
+}
 
 beforeEach(async () => {
 
-  let data = await testHelper.beforeEachTest();
+  let data = await testHelper.beforeEachTest(testGlobalData);
   app = testHelper.getApp();
 })
 
 afterEach(async () => {
   await testHelper.afterEachTest();
 })
+
+let requestBody = {
+  email: testHelper.testUser.email,
+  password: testHelper.testUser.password
+};
 
 describe("Login Test", () => {
   it ("user can log in", async () => {

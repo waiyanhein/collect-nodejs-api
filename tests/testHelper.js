@@ -40,10 +40,11 @@ const getApp = () => {
   return app;
 }
 
-const beforeEachTest = async () => {
+
+const beforeEachTest = async (testGlobalData) => {
   await seedData();
   app = getApp();
-  server = await app.listen(3001, () => {
+  server = await app.listen((testGlobalData.port_id), () => {
 
     console.log("Test server is running");
   })
@@ -69,6 +70,14 @@ const testUser = {
   name: "tester",
   email: "tester@gmail.com",
   password: "password1234"
+}
+
+const getTestUserModel = async () => {
+  let userModel = User.findOne({
+    where: {
+      email: testUser.email
+    }
+  })
 }
 
 exports.getApp = getApp;

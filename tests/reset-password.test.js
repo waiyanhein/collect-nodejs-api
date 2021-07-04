@@ -13,9 +13,13 @@ const { Op } = require("sequelize");
 const date = require('date-and-time');
 const authService = require('../services/authService.js');
 
+let testGlobalData = {
+  port_id: 3002
+}
+
 beforeEach(async () => {
 
-  let data = await testHelper.beforeEachTest();
+  let data = await testHelper.beforeEachTest(testGlobalData);
   app = testHelper.getApp();
 })
 

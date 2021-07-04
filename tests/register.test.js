@@ -20,8 +20,12 @@ const registerRequestBody = () => {
   };
 }
 
+let testGlobalData = {
+  port_id: 3001
+}
+
 beforeEach(async () => {
-  let data = await testHelper.beforeEachTest();
+  let data = await testHelper.beforeEachTest(testGlobalData);
   app = testHelper.getApp();
 })
 
