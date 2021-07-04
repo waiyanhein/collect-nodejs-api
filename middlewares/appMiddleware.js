@@ -1,5 +1,6 @@
 // this middleware will initialize auth object extracting the token from the headers.
 // NOTE: this middleware must be called before any other middlewares
+const authService = require('../services/authService.js');
 
 const extractAccessToken = (req) => {
   if (! req.headers.authorization) {
@@ -32,9 +33,22 @@ const appMiddleware = (req, res, next) => {
   let accessToken = extractAccessToken(req);
   if (accessToken) {
     req.auth.access_token = accessToken;
-  }
+    authService.validateAccessToken(accessToken)
+    .then(result => {
+      if (! result.error) {
+        req.auth.id = result.data.id;
+        req.auth.name = result.data.name;
+        req.auth.email = result.data.email;
+      }
+      next();
+    })
+    .catch(error => {
 
-  next();
+      next();
+    })
+  } else {
+    next();
+  }
 }
 
 module.exports = appMiddleware;
