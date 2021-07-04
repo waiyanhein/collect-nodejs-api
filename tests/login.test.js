@@ -11,9 +11,7 @@ let testGlobalData = {
 }
 
 beforeEach(async () => {
-
-  let data = await testHelper.beforeEachTest(testGlobalData);
-  app = testHelper.getApp();
+  app = await testHelper.beforeEachTest(testGlobalData);
 })
 
 afterEach(async () => {

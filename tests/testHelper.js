@@ -48,6 +48,8 @@ const beforeEachTest = async (testGlobalData) => {
 
     console.log("Test server is running");
   })
+
+  return app;
 }
 
 const afterEachTest = async () => {
