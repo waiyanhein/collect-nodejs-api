@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "all-tests": "npm run test login.test.js && npm run test register.test.js && npm run test reset-password.test.js"
+    "all-tests": "jest login.test.js && jest register.test.js && jest reset-password.test.js"
   },
   "author": "",
   "license": "ISC",
