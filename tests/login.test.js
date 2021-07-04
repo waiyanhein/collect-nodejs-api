@@ -10,8 +10,16 @@ let testGlobalData = {
   port_id: 3000
 }
 
+beforeAll(async () => {
+  app = await testHelper.beforeAllTests(testGlobalData);
+})
+
+afterAll(async () => {
+  await testHelper.afterAllTests(testGlobalData);
+})
+
 beforeEach(async () => {
-  app = await testHelper.beforeEachTest(testGlobalData);
+  await testHelper.beforeEachTest(testGlobalData);
 })
 
 afterEach(async () => {

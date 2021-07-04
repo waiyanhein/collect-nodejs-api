@@ -40,9 +40,7 @@ const getApp = () => {
   return app;
 }
 
-
-const beforeEachTest = async (testGlobalData) => {
-  await seedData();
+const beforeAllTests = async (testGlobalData) => {
   app = getApp();
   server = await app.listen((testGlobalData.port_id), () => {
 
@@ -52,12 +50,19 @@ const beforeEachTest = async (testGlobalData) => {
   return app;
 }
 
+const afterAllTests = async (testGlobalData) => {
+  await server.close(() => {
+
+  })
+}
+
+const beforeEachTest = async (testGlobalData) => {
+  await seedData();
+}
+
 const afterEachTest = async () => {
   await database.sequelize.sync({
     force: true
-  })
-  await server.close(() => {
-
   })
 }
 
@@ -85,5 +90,7 @@ const getTestUserModel = async () => {
 exports.getApp = getApp;
 exports.beforeEachTest = beforeEachTest;
 exports.afterEachTest = afterEachTest;
+exports.beforeAllTests = beforeAllTests;
+exports.afterAllTests = afterAllTests;
 exports.hasValidationErrorMessage = hasValidationErrorMessage;
 exports.testUser = testUser;
