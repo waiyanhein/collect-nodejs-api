@@ -39,6 +39,7 @@ const appMiddleware = (req, res, next) => {
         req.auth.id = result.data.id;
         req.auth.name = result.data.name;
         req.auth.email = result.data.email;
+        req.auth.is_logged_in = true;
       }
       next();
     })
